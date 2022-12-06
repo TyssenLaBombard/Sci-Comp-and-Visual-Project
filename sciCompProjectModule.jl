@@ -84,5 +84,24 @@ end
 
 
 
+function gradientDescentBB(f::Function,x₀::Vector; max_steps = 100)
+  local steps = 0
+  local ∇f₀ = ForwardDiff.gradient(f,x₀)
+  local x₁ = x₀ - 0.25 * ∇f₀ # need to start with a value for x₁
+  while norm(∇f₀)> 1e-4 && steps < max_steps
+    ∇f₁ = ForwardDiff.gradient(f,x₁)
+    Δ∇f = ∇f₁-∇f₀
+    x₂ = x₁ - abs(dot(x₁-x₀,Δ∇f))/norm(Δ∇f)^2*∇f₁
+    x₀ = x₁
+    x₁ = x₂
+    ∇f₀ = ∇f₁
+    steps += 1
+  end
+  @show steps
+  steps < max_steps || throw(ErrorException("The number of steps has exceeded $max_steps"))
+  x₁
+end
+
+
 
 end #end module SciCompProjectModule

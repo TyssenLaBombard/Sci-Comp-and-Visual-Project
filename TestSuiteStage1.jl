@@ -20,6 +20,4 @@ using Test
         @test isa(XYData((1.0,2,3),(4,5,6)),XYData)
         @test_throws argumentError XYData(1.0,2,3),(1//1,5,6)
     
-    @testset "LinearRegression" begin
-        @test
     
