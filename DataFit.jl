@@ -96,3 +96,19 @@ end
 
 
 end #end module SciCompProjectModule
+
+
+#1. Enter the gradientDescentBB functions from the textbook. Add them to your module
+
+#2. Write a function called bestFitLine that minimizes equation (1) for a given set of data using the Barzilai–Borwein gradient descent code in problem #1. The only input should be a XYData object and should return a named tuple or a new datatype. Add the function to your module.
+#function bestFitLine(XYData::XYData)
+
+#4. consider a function of the form f(x;a,b,c) = ae^(bx) + C. You can write a best fit function for this by minimizing:
+
+
+#Write a function called bestFitExponential that uses either the gradient descent from #1 or the functions
+#from the JuMP module to find the minimum of (3).
+
+#5. Write a test for your bestFitExponential function that uses a set of data that is generated from an exponential function and it should fit (fairly close) the given function.
+
+#6. Write a function similar to that in #4 to minimize a periodic function of the form
