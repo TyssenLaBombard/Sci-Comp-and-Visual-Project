@@ -2,6 +2,8 @@ module DataFit
 
 import Base.show, RecipesBase, Plots
 
+using RecipesBase
+
 export Point2D, XYData, linearRegression
 
 
@@ -83,15 +85,17 @@ return
     xpts, ypts
 end
 
+"""
+this function approximates the slope (m) and intercept (b) of a best fit line for the given data in the form m,b
+"""
 
-"""
-function that fin linear regression of XYdata object that gets passed in
-TODO: Need to fix this
-"""
 function linearRegression(Data::XYData)
-    m = Data.vertices[1].x
+    xpts = map(pt->pt.x ,Data.vertices) 
+    ypts = map(pt->pt.y ,Data.vertices) 
+    m = (length(xpts)*sum(xpts.*ypts) - sum(xpts)*sum(ypts))/(length(ypts)*sum(xpts.^2)-sum(xpts)^2)
+    b = (sum(ypts) - m*sum(xpts))/length(xpts)
+    m,b
 end
-
 
 
 
