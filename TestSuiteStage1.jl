@@ -1,7 +1,7 @@
-using SciCompProjectModule
+using .DataFit
 using Test
 
-    @testSet "Legal Point2D" begin
+    @testset "Legal Point2D" begin
         @test isa(Point2D(1,2),Point2D)
         @test isa(Point2D(1.0,2.0),Point2D)
         
@@ -19,5 +19,5 @@ using Test
         @test isa(XYData([1.0,2,3],[4,5,6]),XYData)
         @test isa(XYData((1.0,2,3),(4,5,6)),XYData)
         @test_throws argumentError XYData(1.0,2,3),(1//1,5,6)
-    
+end
     

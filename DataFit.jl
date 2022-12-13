@@ -1,6 +1,6 @@
 module DataFit
 
-import Base.show, RecipesBase, Plots
+import Base.show, Plots
 
 using RecipesBase
 
@@ -13,7 +13,7 @@ export Point2D, XYData, linearRegression
 this struct makes a Point2D object with x and y as the field types 
 """
 
-mutable struct Point2D{T <: Real}
+struct Point2D{T <: Real}
     x::T
     y::T
 end
@@ -30,7 +30,7 @@ Point2D(x::Real, y::Real) = Point2D(promote(x,y)...)
 this struct makes vector of Point2D objects 
 """
 
-mutable struct XYData
+struct XYData
     #stores vector of Point2D objects
     vertices::Vector{Point2D{T}} where T <: Real
     
