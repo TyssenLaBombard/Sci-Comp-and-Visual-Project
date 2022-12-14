@@ -4,7 +4,7 @@ import Base.show, Plots
 
 using RecipesBase
 
-export Point2D, XYData, linearRegression
+export Point2D, XYData, linearRegression, gradientDescentBB
 
 
 
@@ -103,6 +103,26 @@ end #end module SciCompProjectModule
 
 
 #1. Enter the gradientDescentBB functions from the textbook. Add them to your module
+
+function gradientDescentBB(f::Function,x₀::Vector; max_steps = 100)
+  local steps = 0
+  local ∇f₀ = ForwardDiff.gradient(f,x₀)
+  local x₁ = x₀ - 0.25 * ∇f₀ # need to start with a value for x₁
+  while norm(∇f₀)> 1e-4 && steps < max_steps
+    ∇f₁ = ForwardDiff.gradient(f,x₁)
+    Δ∇f = ∇f₁-∇f₀
+    x₂ = x₁ - abs(dot(x₁-x₀,Δ∇f))/norm(Δ∇f)^2*∇f₁
+    x₀ = x₁
+    x₁ = x₂
+    ∇f₀ = ∇f₁
+    steps += 1
+  end
+  @show steps
+  steps < max_steps || throw(ErrorException("The number of steps has exceeded $max_steps"))
+  x₁
+end
+
+
 
 #2. Write a function called bestFitLine that minimizes equation (1) for a given set of data using the Barzilai–Borwein gradient descent code in problem #1. The only input should be a XYData object and should return a named tuple or a new datatype. Add the function to your module.
 #function bestFitLine(XYData::XYData)
