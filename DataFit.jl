@@ -4,7 +4,7 @@ import Base.show
 
 using RecipesBase, ForwardDiff, LinearAlgebra
 
-export Point2D, XYData, linearRegression, gradientDescentBB, bestFitLine
+export Point2D, XYData, linearRegression, gradientDescentBB, bestFitLine, bestExponentialFit
 
 
 
@@ -131,8 +131,25 @@ function bestFitLine(data::XYData)
 end
 
 
-#function bestExponentialFit(data::XYData)
+"""
+Function to find best exponential fit. Takes in XYData object as argument
+- uses IpopT and JuMP to find minimum
+"""
+function bestExponentialFit(data::XYData)
+
+model = Model(Ipopt.Optimizer)
+set_optimizer_attribute(model,"print_level",5) # this can be level 1 through 12.  1 minimal.
+@variable(model, a, start = 0.0)
+@variable(model, b, start = 0.0)
+@variable(model, c, start = 0.0)
+
+@NLobjective(model, Min, (1 - a)^2 + 100 * (b - a^2)^2)
+
+optimize!(model)
+@show value(a),value(b), value(c)
     
+#gradientDescentBB(S,[1,2,3])
+end   
 
 
 
