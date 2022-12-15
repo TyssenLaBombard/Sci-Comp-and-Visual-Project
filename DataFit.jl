@@ -1,17 +1,19 @@
 module DataFit
 
-import Base.show, RecipesBase, Plots
+import Base.show, Plots
 
-export Point2D, XYData, linearRegression, gradientDescentBB
+using RecipesBase, ForwardDiff, LinearAlgebra
 
-using RecipesBase, Plots
+export Point2D, XYData, linearRegression, gradientDescentBB, bestFitLine
+
+
 
 
 """
 this struct makes a Point2D object with x and y as the field types 
 """
 
-mutable struct Point2D{T <: Real}
+struct Point2D{T <: Real}
     x::T
     y::T
 end
@@ -24,11 +26,12 @@ Point2D(x::Real, y::Real) = Point2D(promote(x,y)...)
 
 
 
+
 """
-this struct makes vector of Point2D objects 
+This struct makes vector of Point2D objects called XYData
 """
 
-mutable struct XYData
+struct XYData
     #stores vector of Point2D objects
     vertices::Vector{Point2D{T}} where T <: Real
     
@@ -67,7 +70,6 @@ Base.show(io::IO, n::XYData) = print(io, string("[",join(n.vertices, ","),"]"))
 """
 this function plots the XYdata points onto a scatter plot 
 """
-
 @recipe function f(n::XYData)
     legend --> false
     title --> "XYData  Scatter Plot"
@@ -84,42 +86,20 @@ return
 end
 
 
+
+
 """
-function that fin linear regression of XYdata object that gets passed in
-TODO: Need to fix this
+this function approximates the slope (m) and intercept (b) of a best fit line for the given data in the form m,b
 """
 function linearRegression(Data::XYData)
-    m = Data.vertices[1].x
+    xpts = map(pt->pt.x ,Data.vertices) 
+    ypts = map(pt->pt.y ,Data.vertices) 
+    m = (length(xpts)*sum(xpts.*ypts) - sum(xpts)*sum(ypts))/(length(ypts)*sum(xpts.^2)-sum(xpts)^2)
+    b = (sum(ypts) - m*sum(xpts))/length(xpts)
+    m,b
 end
 
 
-"""
-Function for gradient decent from chapter 27
-"""
-function gradientDescentBB(f::Function,x₀::Vector; max_steps = 100)
-  local steps = 0
-  local ∇f₀ = ForwardDiff.gradient(f,x₀)
-  local x₁ = x₀ - 0.25 * ∇f₀
-  while norm(∇f₀)> 1e-4 && steps < max_steps
-    ∇f₁ = ForwardDiff.gradient(f,x₁)
-    Δ∇f = ∇f₁-∇f₀
-    x₂ = x₁ - abs(dot(x₁-x₀,Δ∇f))/norm(Δ∇f)^2*∇f₁
-    x₀ = x₁
-    x₁ = x₂
-    ∇f₀ = ∇f₁
-    steps += 1
-  end
-  @show steps
-  steps < max_steps || throw(ErrorException("The number of steps has exceeded $max_steps"))
-  x₁
-end
-
-<<<<<<< HEAD
-=======
-end #end module SciCompProjectModule
-
-
-#1. Enter the gradientDescentBB functions from the textbook. Add them to your module
 
 function gradientDescentBB(f::Function,x₀::Vector; max_steps = 100)
   local steps = 0
@@ -141,13 +121,36 @@ end
 
 
 
-#2. Write a function called bestFitLine that minimizes equation (1) for a given set of data using the Barzilai–Borwein gradient descent code in problem #1. The only input should be a XYData object and should return a named tuple or a new datatype. Add the function to your module.
-#function bestFitLine(XYData::XYData)
+function bestFitLine(data::XYData)
+    function S(c)
+        a=c[1]
+        b=c[2]
+        sum(pt->(a*pt.x+b-pt.y)^2,data.vertices)
+    end
+    gradientDescentBB(S,[1,2])
+end
 
-#4. consider a function of the form f(x;a,b,c) = ae^(bx) + C. You can write a best fit function for this by minimizing:
->>>>>>> main
+
+
 
 end #end module SciCompProjectModule
 
 
+#1. Enter the gradientDescentBB functions from the textbook. Add them to your module
 
+
+
+
+
+#2. Write a function called bestFitLine that minimizes equation (1) for a given set of data using the Barzilai–Borwein gradient descent code in problem #1. The only input should be a XYData object and should return a named tuple or a new datatype. Add the function to your module.
+#function bestFitLine(XYData::XYData)
+
+#4. consider a function of the form f(x;a,b,c) = ae^(bx) + C. You can write a best fit function for this by minimizing:
+
+
+#Write a function called bestFitExponential that uses either the gradient descent from #1 or the functions
+#from the JuMP module to find the minimum of (3).
+
+#5. Write a test for your bestFitExponential function that uses a set of data that is generated from an exponential function and it should fit (fairly close) the given function.
+
+#6. Write a function similar to that in #4 to minimize a periodic function of the form
