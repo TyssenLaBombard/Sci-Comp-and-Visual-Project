@@ -1,6 +1,6 @@
 module DataFit
 
-import Base.show, Plots
+import Base.show
 
 using RecipesBase, ForwardDiff, LinearAlgebra
 
@@ -123,23 +123,21 @@ end
 
 function bestFitLine(data::XYData)
     function S(c)
-        a=c[1]
-        b=c[2]
+        a=c[1] #a is slope 
+        b=c[2] #b is y intercept 
         sum(pt->(a*pt.x+b-pt.y)^2,data.vertices)
     end
     gradientDescentBB(S,[1,2])
 end
 
 
+#function bestExponentialFit(data::XYData)
+    
+
+
 
 
 end #end module SciCompProjectModule
-
-
-#1. Enter the gradientDescentBB functions from the textbook. Add them to your module
-
-
-
 
 
 #2. Write a function called bestFitLine that minimizes equation (1) for a given set of data using the Barzilai–Borwein gradient descent code in problem #1. The only input should be a XYData object and should return a named tuple or a new datatype. Add the function to your module.
