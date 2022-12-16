@@ -9,15 +9,15 @@ using Test
     
     @testset "Legal XYData" begin
         @test isa(XYData([1,2,3],[4,5,6]),XYData)
-        @test_throws argumentError XYData([1,2,3,4],[5,6,7])
+        @test_throws ArgumentError XYData([1,2,3,4],[5,6,7])
     end 
+
     @testset "legal XYData Tuple" begin
-        @test isa(XYData((1,2,3),(4,5,6)),XYData)
+        @test isa(XYData([(1,2), (4,2), (6,7)]),XYData)
     
     end 
     @testset "Legal XYData Types" begin
         @test isa(XYData([1.0,2,3],[4,5,6]),XYData)
-        @test isa(XYData((1.0,2,3),(4,5,6)),XYData)
-        @test_throws argumentError XYData(1.0,2,3),(1//1,5,6)
-end
+        @test_throws MethodError XYData(1.0,2,3),(1//1,5,6)
+    end 
     

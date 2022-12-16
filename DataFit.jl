@@ -1,10 +1,10 @@
 module DataFit
 
-import Base.show, Plots
+import Base.show
 
-using RecipesBase
+using RecipesBase, ForwardDiff, LinearAlgebra
 
-export Point2D, XYData, linearRegression, gradientDescentBB
+export Point2D, XYData, linearRegression, gradientDescentBB, bestFitLine, bestExponentialFit
 
 
 
@@ -26,8 +26,9 @@ Point2D(x::Real, y::Real) = Point2D(promote(x,y)...)
 
 
 
+
 """
-this struct makes vector of Point2D objects 
+This struct makes vector of Point2D objects called XYData
 """
 
 struct XYData
@@ -69,7 +70,6 @@ Base.show(io::IO, n::XYData) = print(io, string("[",join(n.vertices, ","),"]"))
 """
 this function plots the XYdata points onto a scatter plot 
 """
-
 @recipe function f(n::XYData)
     legend --> false
     title --> "XYData  Scatter Plot"
@@ -85,10 +85,12 @@ return
     xpts, ypts
 end
 
+
+
+
 """
 this function approximates the slope (m) and intercept (b) of a best fit line for the given data in the form m,b
 """
-
 function linearRegression(Data::XYData)
     xpts = map(pt->pt.x ,Data.vertices) 
     ypts = map(pt->pt.y ,Data.vertices) 
@@ -98,11 +100,6 @@ function linearRegression(Data::XYData)
 end
 
 
-
-end #end module SciCompProjectModule
-
-
-#1. Enter the gradientDescentBB functions from the textbook. Add them to your module
 
 function gradientDescentBB(f::Function,x₀::Vector; max_steps = 100)
   local steps = 0
@@ -122,6 +119,42 @@ function gradientDescentBB(f::Function,x₀::Vector; max_steps = 100)
   x₁
 end
 
+
+
+function bestFitLine(data::XYData)
+    function S(c)
+        a=c[1] #a is slope 
+        b=c[2] #b is y intercept 
+        sum(pt->(a*pt.x+b-pt.y)^2,data.vertices)
+    end
+    gradientDescentBB(S,[1,2])
+end
+
+
+"""
+Function to find best exponential fit. Takes in XYData object as argument
+- uses IpopT and JuMP to find minimum
+"""
+function bestExponentialFit(data::XYData)
+
+model = Model(Ipopt.Optimizer)
+set_optimizer_attribute(model,"print_level",5) # this can be level 1 through 12.  1 minimal.
+@variable(model, a, start = 0.0)
+@variable(model, b, start = 0.0)
+@variable(model, c, start = 0.0)
+
+@NLobjective(model, Min, (1 - a)^2 + 100 * (b - a^2)^2)
+
+optimize!(model)
+@show value(a),value(b), value(c)
+    
+#gradientDescentBB(S,[1,2,3])
+end   
+
+
+
+
+end #end module SciCompProjectModule
 
 
 #2. Write a function called bestFitLine that minimizes equation (1) for a given set of data using the Barzilai–Borwein gradient descent code in problem #1. The only input should be a XYData object and should return a named tuple or a new datatype. Add the function to your module.
