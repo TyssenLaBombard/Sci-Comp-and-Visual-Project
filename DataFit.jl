@@ -2,7 +2,7 @@ module DataFit
 
 import Base.show
 
-using RecipesBase, ForwardDiff, LinearAlgebra
+using RecipesBase, ForwardDiff, LinearAlgebra, JuMP, Ipopt
 
 export Point2D, XYData, linearRegression, gradientDescentBB, bestFitLine, bestExponentialFit
 
@@ -101,7 +101,7 @@ end
 
 
 
-function gradientDescentBB(f::Function,x₀::Vector; max_steps = 100)
+function gradientDescentBB(f::Function,x₀::Vector; max_steps = 1_000_000)
   local steps = 0
   local ∇f₀ = ForwardDiff.gradient(f,x₀)
   local x₁ = x₀ - 0.25 * ∇f₀ # need to start with a value for x₁
